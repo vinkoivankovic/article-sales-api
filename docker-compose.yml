@@ -1,0 +1,27 @@
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ../data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=user
+      - POSTGRES_DB=article_sales
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: article_sales_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/article_sales
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      jwt.token.validity: 10000
+    ports:
+      - "8005:8005"
+    depends_on:
+      - postgres
